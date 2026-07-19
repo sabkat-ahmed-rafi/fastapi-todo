@@ -6,7 +6,7 @@ class AppException(Exception):
     error_code = ErrorCode.INTERNAL_SERVER_ERROR
 
     def __init__(self, message: str | None = None, error_code: str | None = None, status_code: int | None = None):
-        super().__init__(message) # Without this some logging tools and stack traces may not show the exception message properly.
+        super().__init__(message) # In Python, the built-in Exception class expects one argument. if we don't do this then parent Exception class NEVER receives the message!
 
         self.message = message or self.message
         self.error_code = error_code or self.error_code
