@@ -1,6 +1,3 @@
-from fastapi import FastAPI
-from core.startup import setup_app
+from core.app import create_app
 
-app = FastAPI()
-
-setup_app(app)
+app = create_app()
