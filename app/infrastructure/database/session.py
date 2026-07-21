@@ -25,5 +25,5 @@ async def connect_database():
     async with engine.begin() as conn:
         await conn.run_sync(lambda _: None)
 
-async def diconnect_database():
+async def disconnect_database():
     await engine.dispose()
