@@ -1,6 +1,9 @@
 import uuid
 
+from fastapi import UploadFile
+
 from infrastructure.storage.base import StorageProvider
+from core.config import settings
 
 from .models import File
 from .repository import FileRepository
@@ -10,8 +13,8 @@ from .enums import FileCategory, OwnerType, FileStatus
 from .paths import FilePath
 from .exceptions import FileNotFound
 
-class FileService:
 
+class FileService:
 
     def __init__(
         self,
@@ -29,40 +32,36 @@ class FileService:
         self.path_generator = path_generator
 
 
-
     async def upload(
         self,
         *,
-        file,
+        file: UploadFile,
         owner_type: OwnerType,
         owner_id: str,
         category: FileCategory,
-    ):
-        # Validate
-        self.validator.validate_image(
+    ) -> File:
+
+        # Validate based on category
+        self.validator.validate(
             content_type=file.content_type,
             size=file.size,
+            category=category,
         )
 
-        # Generate filename
-        extension = (
-            file.filename
-            .split(".")[-1]
-        )
+        # Generate unique filename
+        extension = file.filename.rsplit(".", 1)[-1]
 
-        filename = self.namer.generate(
-            extension
-        )
+        filename = self.namer.generate(extension)
 
-        # Generate storage path
+        # Build storage path
         path = self.path_generator.generate(
             owner_type=owner_type,
             owner_id=owner_id,
             category=category,
-            filename=filename
+            filename=filename,
         )
 
-        # Send to storage
+        # Store the file
         content = await file.read()
 
         storage_key = await self.storage.upload(
@@ -71,12 +70,12 @@ class FileService:
             content_type=file.content_type,
         )
 
-        # Save metadata
+        # Save metadata to database
         file_record = File(
             id=str(uuid.uuid4()),
             original_name=file.filename,
             storage_key=storage_key,
-            provider="local",
+            provider=settings.STORAGE_PROVIDER,
             mime_type=file.content_type,
             size=file.size,
             owner_type=owner_type,
@@ -87,28 +86,27 @@ class FileService:
         return await self.repository.create(file_record)
 
 
-    async def delete(
-        self,
-        file_id: str
-    ):
+    async def get(self, file_id: str) -> File:
 
-        file = await self.repository.get_by_id(
-            file_id
-        )
-
+        file = await self.repository.get_by_id(file_id)
 
         if not file:
             raise FileNotFound()
 
+        return file
 
-        await self.storage.delete(
-            file.storage_key
-        )
 
+    def get_url(self, file: File) -> str:
+
+        return self.storage.get_url(file.storage_key)
+
+
+    async def delete(self, file_id: str) -> None:
+
+        file = await self.get(file_id)
+
+        await self.storage.delete(file.storage_key)
 
         file.status = FileStatus.DELETED
 
-
-        await self.repository.update(
-            file
-        )
+        await self.repository.update(file)

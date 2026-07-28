@@ -2,7 +2,6 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from infrastructure.database import get_db
-
 from infrastructure.storage.factory import get_storage
 
 from .repository import FileRepository
@@ -18,20 +17,16 @@ def get_file_repository(
 
     return FileRepository(session)
 
+
 def get_file_service(
     repository: FileRepository = Depends(get_file_repository),
-    storage = Depends(get_storage),
+    storage=Depends(get_storage),
 ):
 
     return FileService(
-
         repository=repository,
-
         storage=storage,
-
         validator=FileValidator(),
-
         namer=FileNamer(),
-
         path_generator=FilePath(),
     )

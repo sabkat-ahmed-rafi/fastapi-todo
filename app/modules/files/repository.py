@@ -35,3 +35,12 @@ class FileRepository:
         await self.session.delete(file)
 
         await self.session.commit()
+
+
+    async def update(self, file: File):
+
+        await self.session.commit()
+
+        await self.session.refresh(file)
+
+        return file

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Boolean, DateTime
+from sqlalchemy import Column, String, Integer, Boolean, DateTime, func
 from infrastructure.database import Base
 from .enums import FileStatus
 
@@ -59,9 +59,21 @@ class File(Base):
 
     status = Column(
         String,
-        default=FileStatus.PENDING
+        default=FileStatus.ACTIVE
     )
 
+    created_at = Column(
+        DateTime,
+        server_default=func.now(),
+        nullable=False
+    )
+
+    updated_at = Column(
+        DateTime,
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=True
+    )
 
     deleted_at = Column(
         DateTime,
