@@ -17,7 +17,6 @@ class LocalStorageProvider(StorageProvider):
         *,
         path: str,
         content: bytes,
-        content_type: str,
     ) -> str:
 
         full_path = self.root / path

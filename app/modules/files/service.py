@@ -2,7 +2,7 @@ import uuid
 
 from fastapi import UploadFile
 
-from infrastructure.storage.base import StorageProvider
+from infrastructure.storage import StorageProvider
 from core.config import settings
 
 from .models import File

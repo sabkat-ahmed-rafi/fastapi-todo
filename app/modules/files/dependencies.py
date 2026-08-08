@@ -2,7 +2,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from infrastructure.database import get_db
-from infrastructure.storage.factory import get_storage
+from infrastructure.storage import get_storage
 
 from .repository import FileRepository
 from .service import FileService

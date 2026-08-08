@@ -16,9 +16,6 @@ class OwnerType(str, Enum):
 
     USER = "user"
 
-    PRODUCT = "product"
-
-    ORDER = "order"
 
 
 class FileStatus(str, Enum):
