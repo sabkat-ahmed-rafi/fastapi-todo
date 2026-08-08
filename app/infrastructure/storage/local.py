@@ -3,7 +3,7 @@ from pathlib import Path
 import anyio
 
 from .base import StorageProvider
-from .exceptions import FileNotFound, UploadFailed
+from .exceptions import StorageFileNotFound, UploadFailed
 
 
 class LocalStorageProvider(StorageProvider):
@@ -17,6 +17,7 @@ class LocalStorageProvider(StorageProvider):
         *,
         path: str,
         content: bytes,
+        content_type: str,
     ) -> str:
 
         full_path = self.root / path
@@ -57,7 +58,7 @@ class LocalStorageProvider(StorageProvider):
 
         def _read():
             if not full_path.exists():
-                raise FileNotFound(f"File not found: {key}")
+                raise StorageFileNotFound(f"File not found: {key}")
             return full_path.read_bytes()
 
         return await anyio.to_thread.run_sync(_read)
