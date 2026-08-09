@@ -1,13 +1,13 @@
-from datetime import datetime
-
-from sqlalchemy import Boolean, DateTime, String, Integer, func
+from sqlalchemy import Boolean, String, Integer
 from sqlalchemy.orm import Mapped, mapped_column
+
+from infrastructure.database import TimestampMixin
 
 from infrastructure.database import Base
 from .enums import FileStatus
 
 
-class File(Base):
+class File(TimestampMixin, Base):
     __tablename__ = "files"
 
     id: Mapped[str] = mapped_column(
@@ -65,22 +65,4 @@ class File(Base):
         String,
         default=FileStatus.ACTIVE,
         nullable=False
-    )
-
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        server_default=func.now(),
-        nullable=False
-    )
-
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        server_default=func.now(),
-        onupdate=func.now(),
-        nullable=False
-    )
-
-    deleted_at: Mapped[datetime | None] = mapped_column(
-        DateTime,
-        nullable=True
     )
