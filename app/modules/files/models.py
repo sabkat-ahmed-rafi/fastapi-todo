@@ -1,8 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column
 
-from infrastructure.database import TimestampMixin
-
-from infrastructure.database import Base
+from infrastructure.database import Base, TimestampMixin
 from .enums import FileStatus
 
 
