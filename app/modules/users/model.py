@@ -17,7 +17,7 @@ class Users(TimestampMixin, SoftDeleteMixin, Base):
     )
 
     password_hash: Mapped[str] = mapped_column(
-        nullable=False,
+        nullable=True,
     )
 
     first_name: Mapped[str | None] = mapped_column(
