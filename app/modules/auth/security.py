@@ -8,7 +8,6 @@ from .exceptions import TokenExpired
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 
 def encode_access_token(user_id: str) -> str:
@@ -17,20 +16,7 @@ def encode_access_token(user_id: str) -> str:
     return jwt.encode(payload, settings.SECRET_KEY, algorithm=ALGORITHM)
 
 
-def encode_refresh_token(user_id: str) -> str:
-    expire = int(datetime.now(timezone.utc).timestamp()) + (REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60)
-    payload = {"sub": user_id, "exp": expire}
-    return jwt.encode(payload, settings.SECRET_KEY, algorithm=ALGORITHM)
-
-
 def decode_access_token(token: str) -> dict:
-    try:
-        return jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
-    except jwt.InvalidTokenError:
-        raise TokenExpired()
-
-
-def decode_refresh_token(token: str) -> dict:
     try:
         return jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
     except jwt.InvalidTokenError:
