@@ -6,7 +6,7 @@ from .dependencies import get_auth_service, get_current_active_user
 from users.schemas import UserResponse
 from users.model import Users
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter()
 
 
 @router.post("/register", response_model=UserResponse)

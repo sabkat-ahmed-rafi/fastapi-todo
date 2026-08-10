@@ -1,9 +1,8 @@
 from fastapi import FastAPI
 
 from core.exceptions import register_exception_handler
-from modules.auth.routes import router as auth_router
 from .lifespan import lifespan
-
+from .router_registry import register_routers
 
 
 def create_app() -> FastAPI:
@@ -14,6 +13,6 @@ def create_app() -> FastAPI:
 
     register_exception_handler(app)
 
-    app.include_router(auth_router)
+    register_routers(app)
 
     return app
