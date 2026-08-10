@@ -21,7 +21,7 @@ def get_auth_service(
 async def verify_api_key(
     x_api_key: str = Header(alias="X-API-Key"),
 ):
-    if x_api_key != settings.APP_API_KEY:
+    if x_api_key != settings.API_KEY:
         raise InvalidCredentials()
     return True
 
