@@ -2,7 +2,7 @@ from .dependencies import get_user_service
 from .service import UserService
 from .repository import UserRepository
 from .schemas import UserCreate, UserResponse, UserUpdate
-from .exceptions import EmailAlreadyExists, UserNotFound
+from .exceptions import EmailAlreadyExists
 
 __all__ = [
     "get_user_service",
@@ -12,5 +12,4 @@ __all__ = [
     "UserResponse",
     "UserUpdate",
     "EmailAlreadyExists",
-    "UserNotFound",
 ]

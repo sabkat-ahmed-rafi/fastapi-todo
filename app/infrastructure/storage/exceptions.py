@@ -1,17 +1,14 @@
 from core.exceptions import AppException
 from core.exceptions.codes import ErrorCode
+from core.exceptions import NotFoundException
 
 
-class StorageFileNotFound(AppException):
+class StorageFileNotFound(NotFoundException):
     def __init__(self, message: str = "File not found in storage"):
-        super().__init__(
-            message=message,
-            error_code=ErrorCode.NOT_FOUND,
-            status_code=404,
-        )
+        super().__init__(message=message)
 
 
-class UploadFailed(AppException):
+class UploadFailed(AppException, OSError):
     def __init__(self, message: str = "Upload failed"):
         super().__init__(
             message=message,

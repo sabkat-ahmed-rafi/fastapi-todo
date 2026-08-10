@@ -4,7 +4,7 @@ from .schemas import UserCreate, UserResponse
 from .repository import UserRepository
 from .model import Users
 from .security import hash_password
-from .exceptions import EmailAlreadyExists, UserNotFound
+from .exceptions import EmailAlreadyExists
 
 
 class UserService:

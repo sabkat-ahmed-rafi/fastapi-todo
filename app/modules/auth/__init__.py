@@ -1,6 +1,6 @@
 from .dependencies import get_current_user, get_current_active_user
 from .exceptions import InvalidCredentials, InactiveUser, TokenExpired
-from .schemas import LoginRequest, RegisterRequest, Token, TokenPayload
+from .schemas import LoginRequest, RegisterRequest, Token
 from .service import AuthService
 
 __all__ = [
@@ -10,7 +10,6 @@ __all__ = [
     "LoginRequest",
     "RegisterRequest",
     "Token",
-    "TokenPayload",
     "InvalidCredentials",
     "InactiveUser",
     "TokenExpired",

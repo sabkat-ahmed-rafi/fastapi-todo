@@ -1,29 +1,16 @@
-from core.exceptions import AppException
-from core.exceptions.codes import ErrorCode
+from core.exceptions import UnauthorizedException, ForbiddenException
 
 
-class InvalidCredentials(AppException):
+class InvalidCredentials(UnauthorizedException):
     def __init__(self, message: str = "Invalid credentials"):
-        super().__init__(
-            message=message,
-            error_code=ErrorCode.UNAUTHORIZED,
-            status_code=401,
-        )
+        super().__init__(message=message)
 
 
-class TokenExpired(AppException):
+class TokenExpired(UnauthorizedException):
     def __init__(self, message: str = "Token expired"):
-        super().__init__(
-            message=message,
-            error_code=ErrorCode.UNAUTHORIZED,
-            status_code=401,
-        )
+        super().__init__(message=message)
 
 
-class InactiveUser(AppException):
+class InactiveUser(ForbiddenException):
     def __init__(self, message: str = "Inactive user"):
-        super().__init__(
-            message=message,
-            error_code=ErrorCode.FORBIDDEN,
-            status_code=403,
-        )
+        super().__init__(message=message)

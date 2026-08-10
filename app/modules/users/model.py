@@ -4,7 +4,7 @@ from infrastructure.database import Base, TimestampMixin, SoftDeleteMixin
 
 
 class Users(TimestampMixin, SoftDeleteMixin, Base):
-    ___tablename__ = "users"
+    __tablename__ = "users"
 
     id: Mapped[str] = mapped_column(
         primary_key=True

@@ -33,7 +33,7 @@ class UnauthorizedException(AppException):
         super().__init__(
             message = message,
             error_code = ErrorCode.UNAUTHORIZED,
-            status_code=401
+            status_code = 401
         )
 
 class ForbiddenException(AppException):
