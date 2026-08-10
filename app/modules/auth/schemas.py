@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from users.schemas import UserResponse
+
 
 class Token(BaseModel):
     access_token: str
@@ -16,3 +18,8 @@ class RegisterRequest(BaseModel):
     password: str
     first_name: str | None = None
     last_name: str | None = None
+
+
+class LoginResponse(BaseModel):
+    user: UserResponse
+    token: Token
