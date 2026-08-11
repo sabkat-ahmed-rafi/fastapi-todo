@@ -1,15 +1,15 @@
-from .dependencies import get_current_user, get_current_active_user, get_auth_service
+from .dependencies import authenticated_user, get_current_active_user, get_auth_service, token_verified, verify_api_key
 from .exceptions import InvalidCredentials, InactiveUser, TokenExpired
 from .schemas import LoginRequest, LoginResponse, RegisterRequest, Token
 from .service import AuthService
 from .routes import router as auth_router
-from .dependencies import verify_api_key
-
 
 __all__ = [
-    "get_current_user",
+    "authenticated_user",
+    "token_verified",
     "get_current_active_user",
     "get_auth_service",
+    "verify_api_key",
     "AuthService",
     "auth_router",
     "LoginRequest",
@@ -19,5 +19,4 @@ __all__ = [
     "InvalidCredentials",
     "InactiveUser",
     "TokenExpired",
-    "verify_api_key"
 ]

@@ -4,7 +4,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from core.config import settings
 from .security import decode_access_token
 from .service import AuthService
-from .exceptions import InactiveUser, InvalidCredentials
+from .exceptions import InactiveUser, InvalidCredentials, TokenExpired
 from users.service import UserService
 from users.dependencies import get_user_service
 from users.model import Users
@@ -21,12 +21,12 @@ def get_auth_service(
 async def verify_api_key(
     x_api_key: str = Header(alias="X-API-Key"),
 ):
-    if x_api_key != settings.API_KEY:
-        raise InvalidCredentials()
+    if x_api_key != settings.APP_API_KEY:
+        raise InvalidCredentials("Invalid or missing API key")
     return True
 
 
-async def get_current_user(
+async def authenticated_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     user_service: UserService = Depends(get_user_service),
 ) -> Users:
@@ -38,8 +38,18 @@ async def get_current_user(
     return user
 
 
+async def token_verified(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> dict:
+    token = credentials.credentials
+    try:
+        return decode_access_token(token)
+    except TokenExpired:
+        raise
+
+
 async def get_current_active_user(
-    user: Users = Depends(get_current_user),
+    user: Users = Depends(authenticated_user),
 ) -> Users:
     if not user.is_active:
         raise InactiveUser()
