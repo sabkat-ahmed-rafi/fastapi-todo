@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Response
 
-from app.shared.responses.schema import ApiResponse
+from shared.responses import ApiResponse
 from .schemas import LoginRequest, LoginResponse, RegisterRequest
 from .security import ACCESS_TOKEN_EXPIRE_MINUTES
 from .service import AuthService
