@@ -4,7 +4,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from core.config import settings
 from .security import decode_access_token
 from .service import AuthService
-from .exceptions import InactiveUser, InvalidCredentials, TokenExpired
+from .exceptions import InactiveUser, InvalidCredentials
 from users.service import UserService
 from users.dependencies import get_user_service
 from users.model import Users
