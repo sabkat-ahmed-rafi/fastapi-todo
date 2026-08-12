@@ -33,10 +33,7 @@ async def verify_token(
     token = access_token or (credentials.credentials if credentials else None)
     if not token:
         raise InvalidCredentials("Missing token")
-    try:
-        return decode_access_token(token)
-    except TokenExpired:
-        raise
+    return decode_access_token(token)
 
 
 async def get_current_user(
