@@ -1,15 +1,15 @@
-from fastapi import Depends, Header
+from fastapi import Cookie, Depends, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from core.config import settings
 from .security import decode_access_token
 from .service import AuthService
-from .exceptions import InactiveUser, InvalidCredentials
+from .exceptions import InactiveUser, InvalidCredentials, TokenExpired
 from users.service import UserService
 from users.dependencies import get_user_service
 from users.model import Users
 
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 
 def get_auth_service(
@@ -27,19 +27,23 @@ async def verify_api_key(
 
 
 async def verify_token(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
+    access_token: str | None = Cookie(default=None),
+    credentials: HTTPAuthorizationCredentials | None = Depends(security),
 ) -> dict:
-    token = credentials.credentials
-    return decode_access_token(token)
+    token = access_token or (credentials.credentials if credentials else None)
+    if not token:
+        raise InvalidCredentials("Missing token")
+    try:
+        return decode_access_token(token)
+    except TokenExpired:
+        raise
 
 
 async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
+    token: dict = Depends(verify_token),
     user_service: UserService = Depends(get_user_service),
 ) -> Users:
-    token = credentials.credentials
-    payload = decode_access_token(token)
-    user = await user_service.get_by_id(payload["sub"])
+    user = await user_service.get_by_id(token["sub"])
     if not user:
         raise InvalidCredentials()
     return user
