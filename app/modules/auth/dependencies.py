@@ -1,8 +1,11 @@
 from fastapi import Cookie, Depends, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import settings
-from .security import decode_access_token
+from infrastructure.database import get_db
+from .repository import RefreshTokenRepository
+from .security import decode_access_token, decode_refresh_token
 from .service import AuthService
 from .exceptions import InactiveUser, InvalidCredentials
 from users.service import UserService
@@ -14,8 +17,12 @@ security = HTTPBearer(auto_error=False)
 
 def get_auth_service(
     user_service: UserService = Depends(get_user_service),
+    session: AsyncSession = Depends(get_db),
 ):
-    return AuthService(user_service=user_service)
+    return AuthService(
+        user_service=user_service,
+        refresh_token_repository=RefreshTokenRepository(session),
+    )
 
 
 async def verify_api_key(
@@ -34,6 +41,16 @@ async def verify_token(
     if not token:
         raise InvalidCredentials("Missing token")
     return decode_access_token(token)
+
+
+async def verify_refresh_token(
+    refresh_token: str | None = Cookie(default=None),
+    credentials: HTTPAuthorizationCredentials | None = Depends(security),
+) -> tuple[str, dict]:
+    token = refresh_token or (credentials.credentials if credentials else None)
+    if not token:
+        raise InvalidCredentials("Missing refresh token")
+    return token, decode_refresh_token(token)
 
 
 async def get_current_user(

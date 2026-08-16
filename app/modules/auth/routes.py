@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, Response
 
 from shared.responses import ApiResponse
-from .schemas import LoginRequest, LoginResponse, RegisterRequest
-from .security import ACCESS_TOKEN_EXPIRE_MINUTES
+from .schemas import LoginRequest, LoginResponse, RegisterRequest, Token
+from .security import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
 from .service import AuthService
-from .dependencies import get_auth_service, get_current_active_user
+from .dependencies import get_auth_service, get_current_active_user, verify_refresh_token
 from users.schemas import UserResponse
 from users.model import Users
 
@@ -38,9 +38,47 @@ async def login(
         samesite="lax",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
+    response.set_cookie(
+        key="refresh_token",
+        value=result.token.refresh_token,
+        httponly=True,
+        secure=False,
+        samesite="strict",
+        max_age=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
+    )
     return ApiResponse(
         message="Login successful",
         data=result,
+    )
+
+
+@router.post("/refresh", response_model=ApiResponse[Token])
+async def refresh_access_token(
+    response: Response,
+    verified_token: tuple[str, dict] = Depends(verify_refresh_token),
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    raw_token, payload = verified_token
+    token = await auth_service.rotate_refresh_token(raw_token, payload)
+    response.set_cookie(
+        key="access_token",
+        value=token.access_token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=token.refresh_token,
+        httponly=True,
+        secure=False,
+        samesite="strict",
+        max_age=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
+    )
+    return ApiResponse(
+        message="Tokens refreshed successfully",
+        data=token,
     )
 
 

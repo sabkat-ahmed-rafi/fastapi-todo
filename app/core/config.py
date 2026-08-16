@@ -3,6 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     DATABASE_URL: str
     ACCESS_TOKEN_SECRET: str
+    REFRESH_TOKEN_SECRET: str
     API_KEY: str
 
     STORAGE_PROVIDER: str = "local"
