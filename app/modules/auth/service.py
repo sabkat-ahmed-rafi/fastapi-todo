@@ -74,3 +74,13 @@ class AuthService:
             raise InvalidCredentials("Invalid refresh token")
 
         return AccessToken(access_token=encode_access_token(user.id))
+
+
+    async def logout(self, token: str, payload: dict) -> None:
+        deleted = await self.refresh_token_repository.delete(
+            token_id=payload["jti"],
+            user_id=payload["sub"],
+            token_hash=hash_refresh_token(token),
+        )
+        if not deleted:
+            raise InvalidCredentials("Invalid refresh token")

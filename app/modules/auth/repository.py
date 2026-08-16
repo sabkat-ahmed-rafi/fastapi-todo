@@ -38,3 +38,19 @@ class RefreshTokenRepository:
             )
         )
         return result.scalar_one_or_none() is not None
+
+    async def delete(
+        self,
+        token_id: str,
+        user_id: str,
+        token_hash: str,
+    ) -> bool:
+        result = await self.session.execute(
+            delete(RefreshToken).where(
+                RefreshToken.id == token_id,
+                RefreshToken.user_id == user_id,
+                RefreshToken.token_hash == token_hash,
+            )
+        )
+        await self.session.commit()
+        return result.rowcount == 1

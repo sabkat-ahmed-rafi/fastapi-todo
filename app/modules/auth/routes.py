@@ -74,6 +74,32 @@ async def refresh_access_token(
     )
 
 
+@router.post("/logout", response_model=ApiResponse[None])
+async def logout(
+    response: Response,
+    verified_token: tuple[str, dict] = Depends(verify_refresh_token),
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    raw_token, payload = verified_token
+    await auth_service.logout(raw_token, payload)
+    response.delete_cookie(
+        key="access_token",
+        httponly=True,
+        secure=False,
+        samesite="lax",
+    )
+    response.delete_cookie(
+        key="refresh_token",
+        httponly=True,
+        secure=False,
+        samesite="strict",
+    )
+    return ApiResponse(
+        message="Logout successful",
+        data=None,
+    )
+
+
 @router.get("/me", response_model=ApiResponse[UserResponse])
 async def get_current_user_profile(
     user: Users = Depends(get_current_active_user),
