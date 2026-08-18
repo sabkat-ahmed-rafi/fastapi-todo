@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field
 
 from users.schemas import UserResponse
 
@@ -29,3 +29,22 @@ class RegisterRequest(BaseModel):
 class LoginResponse(BaseModel):
     user: UserResponse
     token: Token
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class VerifyPasswordResetCodeRequest(BaseModel):
+    email: EmailStr
+    code: str = Field(pattern=r"^\d{6}$")
+
+
+class PasswordResetAuthorization(BaseModel):
+    reset_token: str
+    expires_in_seconds: int
+
+
+class ResetPasswordRequest(BaseModel):
+    reset_token: str = Field(min_length=32)
+    new_password: str = Field(min_length=8, max_length=72)

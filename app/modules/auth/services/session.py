@@ -1,16 +1,21 @@
 from datetime import datetime, timezone
 
-from .model import RefreshToken
-from .repository import RefreshTokenRepository
-from .schemas import AccessToken, LoginRequest, RegisterRequest, Token, LoginResponse
-from .security import create_refresh_token, encode_access_token, hash_refresh_token
-from users.service import UserService
-from users.schemas import UserCreate, UserResponse
+from users.schemas import UserResponse
 from users.security import verify_password
-from .exceptions import InactiveUser, InvalidCredentials
+from users.service import UserService
+
+from ..exceptions import InactiveUser, InvalidCredentials
+from ..model import RefreshToken
+from ..repository import RefreshTokenRepository
+from ..schemas import AccessToken, LoginRequest, LoginResponse, Token
+from ..security import (
+    create_refresh_token,
+    encode_access_token,
+    hash_refresh_token,
+)
 
 
-class AuthService:
+class SessionService:
 
     def __init__(
         self,
@@ -19,11 +24,6 @@ class AuthService:
     ):
         self.user_service = user_service
         self.refresh_token_repository = refresh_token_repository
-
-
-    async def register(self, data: RegisterRequest) -> UserResponse:
-        return await self.user_service.create_user(UserCreate(**data.model_dump()))
-
 
     async def login(self, data: LoginRequest) -> LoginResponse:
         user = await self.user_service.get_by_email(data.email)
@@ -36,7 +36,6 @@ class AuthService:
             user=UserResponse.model_validate(user),
             token=token,
         )
-
 
     async def _create_token(self, user_id: str) -> Token:
         refresh_token, token_id, expires_at = create_refresh_token(user_id)
@@ -54,7 +53,6 @@ class AuthService:
             access_token=encode_access_token(user_id),
             refresh_token=refresh_token,
         )
-
 
     async def refresh_access_token(self, token: str, payload: dict) -> AccessToken:
         user_id = payload["sub"]
@@ -74,7 +72,6 @@ class AuthService:
             raise InvalidCredentials("Invalid refresh token")
 
         return AccessToken(access_token=encode_access_token(user.id))
-
 
     async def logout(self, token: str, payload: dict) -> None:
         deleted = await self.refresh_token_repository.delete(

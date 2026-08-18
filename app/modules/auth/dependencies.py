@@ -4,9 +4,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import settings
 from infrastructure.database import get_db
-from .repository import RefreshTokenRepository
+from infrastructure.email import EmailService, get_email_service
+from .repository import PasswordResetRepository, RefreshTokenRepository
 from .security import decode_access_token, decode_refresh_token
-from .service import AuthService
+from .services.password_reset import PasswordResetService
+from .services.registration import RegistrationService
+from .services.session import SessionService
 from .exceptions import InactiveUser, InvalidCredentials
 from users.service import UserService
 from users.dependencies import get_user_service
@@ -15,13 +18,31 @@ from users.model import Users
 security = HTTPBearer(auto_error=False)
 
 
-def get_auth_service(
+def get_registration_service(
+    user_service: UserService = Depends(get_user_service),
+):
+    return RegistrationService(user_service=user_service)
+
+
+def get_session_service(
     user_service: UserService = Depends(get_user_service),
     session: AsyncSession = Depends(get_db),
 ):
-    return AuthService(
+    return SessionService(
         user_service=user_service,
         refresh_token_repository=RefreshTokenRepository(session),
+    )
+
+
+def get_password_reset_service(
+    user_service: UserService = Depends(get_user_service),
+    session: AsyncSession = Depends(get_db),
+    email_service: EmailService = Depends(get_email_service),
+):
+    return PasswordResetService(
+        user_service=user_service,
+        repository=PasswordResetRepository(session),
+        email_service=email_service,
     )
 
 

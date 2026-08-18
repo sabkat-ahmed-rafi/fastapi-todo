@@ -1,6 +1,8 @@
 import uuid
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
+from hmac import compare_digest, new as new_hmac
+from secrets import randbelow, token_urlsafe
 
 import jwt
 
@@ -11,6 +13,11 @@ from .exceptions import TokenExpired
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
+PASSWORD_RESET_CODE_LENGTH = 6
+PASSWORD_RESET_CODE_EXPIRE_MINUTES = 10
+PASSWORD_RESET_TOKEN_EXPIRE_MINUTES = 10
+PASSWORD_RESET_MAX_ATTEMPTS = 5
+PASSWORD_RESET_RESEND_COOLDOWN_SECONDS = 60
 
 
 def encode_access_token(user_id: str) -> str:
@@ -65,3 +72,38 @@ def create_refresh_token(user_id: str) -> tuple[str, str, datetime]:
 
 def hash_refresh_token(token: str) -> str:
     return sha256(token.encode("utf-8")).hexdigest()
+
+
+def create_password_reset_code() -> str:
+    return f"{randbelow(10 ** PASSWORD_RESET_CODE_LENGTH):0{PASSWORD_RESET_CODE_LENGTH}d}"
+
+
+def hash_password_reset_code(request_id: str, code: str) -> str:
+    value = f"{request_id}:{code}".encode("utf-8")
+    return new_hmac(
+        settings.PASSWORD_RESET_SECRET.encode("utf-8"),
+        value,
+        sha256,
+    ).hexdigest()
+
+
+def verify_password_reset_code(
+    request_id: str,
+    code: str,
+    expected_hash: str,
+) -> bool:
+    actual_hash = hash_password_reset_code(request_id, code)
+    return compare_digest(actual_hash, expected_hash)
+
+
+def create_password_reset_token() -> tuple[str, str]:
+    token = token_urlsafe(32)
+    return token, hash_password_reset_token(token)
+
+
+def hash_password_reset_token(token: str) -> str:
+    return new_hmac(
+        settings.PASSWORD_RESET_SECRET.encode("utf-8"),
+        token.encode("utf-8"),
+        sha256,
+    ).hexdigest()
