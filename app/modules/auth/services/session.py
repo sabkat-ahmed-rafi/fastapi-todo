@@ -5,8 +5,8 @@ from users.security import verify_password
 from users.service import UserService
 
 from ..exceptions import InactiveUser, InvalidCredentials
-from ..model import RefreshToken
-from ..repository import RefreshTokenRepository
+from ..models.refresh_token import RefreshToken
+from ..repositories.refresh_token import RefreshTokenRepository
 from ..schemas import AccessToken, LoginRequest, LoginResponse, Token
 from ..security import (
     create_refresh_token,

@@ -8,8 +8,8 @@ from users.security import hash_password
 from users.service import UserService
 
 from ..exceptions import InvalidPasswordReset
-from ..model import PasswordResetCode
-from ..repository import PasswordResetRepository
+from ..models.password_reset_code import PasswordResetCode
+from ..repositories.password_reset import PasswordResetRepository
 from ..schemas import (
     ForgotPasswordRequest,
     PasswordResetAuthorization,

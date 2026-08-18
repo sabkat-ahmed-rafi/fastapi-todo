@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.config import settings
 from infrastructure.database import get_db
 from infrastructure.email import EmailService, get_email_service
-from .repository import PasswordResetRepository, RefreshTokenRepository
+from .repositories.password_reset import PasswordResetRepository
+from .repositories.refresh_token import RefreshTokenRepository
 from .security import decode_access_token, decode_refresh_token
 from .services.password_reset import PasswordResetService
 from .services.registration import RegistrationService
