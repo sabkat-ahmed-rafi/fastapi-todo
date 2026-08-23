@@ -5,9 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.config import settings
 from infrastructure.database import get_db
 from infrastructure.email import EmailService, get_email_service
+from .repositories.email_verification import EmailVerificationRepository
 from .repositories.password_reset import PasswordResetRepository
 from .repositories.refresh_token import RefreshTokenRepository
 from .security import decode_access_token, decode_refresh_token
+from .services.email_verification import EmailVerificationService
 from .services.password_reset import PasswordResetService
 from .services.registration import RegistrationService
 from .services.session import SessionService
@@ -19,10 +21,28 @@ from users.model import Users
 security = HTTPBearer(auto_error=False)
 
 
+def get_email_verification_service(
+    user_service: UserService = Depends(get_user_service),
+    session: AsyncSession = Depends(get_db),
+    email_service: EmailService = Depends(get_email_service),
+):
+    return EmailVerificationService(
+        user_service=user_service,
+        repository=EmailVerificationRepository(session),
+        email_service=email_service,
+    )
+
+
 def get_registration_service(
     user_service: UserService = Depends(get_user_service),
+    email_verification_service: EmailVerificationService = Depends(
+        get_email_verification_service
+    ),
 ):
-    return RegistrationService(user_service=user_service)
+    return RegistrationService(
+        user_service=user_service,
+        email_verification_service=email_verification_service,
+    )
 
 
 def get_session_service(

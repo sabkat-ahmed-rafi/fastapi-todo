@@ -48,3 +48,11 @@ class PasswordResetAuthorization(BaseModel):
 class ResetPasswordRequest(BaseModel):
     reset_token: str = Field(min_length=32)
     new_password: str = Field(min_length=8, max_length=72)
+
+
+class VerifyEmailRequest(BaseModel):
+    token: str = Field(min_length=32)
+
+
+class ResendVerificationRequest(BaseModel):
+    email: EmailStr

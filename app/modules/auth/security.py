@@ -19,6 +19,9 @@ PASSWORD_RESET_TOKEN_EXPIRE_MINUTES = 10
 PASSWORD_RESET_MAX_ATTEMPTS = 5
 PASSWORD_RESET_RESEND_COOLDOWN_SECONDS = 60
 
+EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES = 60
+EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS = 60
+
 
 def encode_access_token(user_id: str) -> str:
     expire = int(datetime.now(timezone.utc).timestamp()) + (ACCESS_TOKEN_EXPIRE_MINUTES * 60)
@@ -104,6 +107,23 @@ def create_password_reset_token() -> tuple[str, str]:
 def hash_password_reset_token(token: str) -> str:
     return new_hmac(
         settings.PASSWORD_RESET_SECRET.encode("utf-8"),
+        token.encode("utf-8"),
+        sha256,
+    ).hexdigest()
+
+
+def _email_verification_secret() -> str:
+    return settings.EMAIL_VERIFICATION_SECRET or settings.PASSWORD_RESET_SECRET
+
+
+def create_email_verification_token() -> tuple[str, str]:
+    token = token_urlsafe(32)
+    return token, hash_email_verification_token(token)
+
+
+def hash_email_verification_token(token: str) -> str:
+    return new_hmac(
+        _email_verification_secret().encode("utf-8"),
         token.encode("utf-8"),
         sha256,
     ).hexdigest()

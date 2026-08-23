@@ -22,8 +22,10 @@ async def get_db():
         yield session
 
 async def connect_database():
+    from .base import Base
+
     async with engine.begin() as conn:
-        await conn.run_sync(lambda _: None)
+        await conn.run_sync(Base.metadata.create_all)
 
 async def disconnect_database():
     await engine.dispose()

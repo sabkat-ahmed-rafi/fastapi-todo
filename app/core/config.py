@@ -5,7 +5,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_SECRET: str
     REFRESH_TOKEN_SECRET: str
     PASSWORD_RESET_SECRET: str
+    EMAIL_VERIFICATION_SECRET: str | None = None
     API_KEY: str
+    FRONTEND_URL: str = "http://localhost:3000"
 
     STORAGE_PROVIDER: str = "local"
     STORAGE_PATH: str = "./uploads"
