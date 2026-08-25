@@ -14,9 +14,9 @@ from .services.password_reset import PasswordResetService
 from .services.registration import RegistrationService
 from .services.session import SessionService
 from .exceptions import InactiveUser, InvalidCredentials
-from users.service import UserService
-from users.dependencies import get_user_service
-from users.model import Users
+from modules.users.service import UserService
+from modules.users.dependencies import get_user_service
+from modules.users.model import Users
 
 security = HTTPBearer(auto_error=False)
 

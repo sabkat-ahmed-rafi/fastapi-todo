@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from core.config import settings
 from infrastructure.email import EmailService
 from infrastructure.email.exceptions import EmailDeliveryFailed
-from users.service import UserService
+from modules.users.service import UserService
 
 from ..exceptions import EmailAlreadyVerified, InvalidEmailVerification
 from ..models.email_verification_token import EmailVerificationToken

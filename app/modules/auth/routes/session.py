@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Response
 
 from shared.responses import ApiResponse
-from users.schemas import UserResponse
-from users.model import Users
+from modules.users.schemas import UserResponse
+from modules.users.model import Users
 
 
 from ..dependencies import get_session_service, verify_refresh_token, get_current_active_user

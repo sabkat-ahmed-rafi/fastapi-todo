@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
-from users.schemas import UserCreate, UserResponse
-from users.service import UserService
+from modules.users.schemas import UserCreate, UserResponse
+from modules.users.service import UserService
 
 from ..schemas import RegisterRequest
 

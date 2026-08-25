@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from users.model import Users
+from modules.users.model import Users
 
 from ..models.password_reset_code import PasswordResetCode
 from ..models.refresh_token import RefreshToken

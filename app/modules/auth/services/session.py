@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
 
-from users.schemas import UserResponse
-from users.security import verify_password
-from users.service import UserService
+from modules.users.schemas import UserResponse
+from modules.users.security import verify_password
+from modules.users.service import UserService
 
 from ..exceptions import InactiveUser, InvalidCredentials
 from ..models.refresh_token import RefreshToken

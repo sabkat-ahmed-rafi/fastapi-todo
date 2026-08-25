@@ -21,11 +21,5 @@ async def get_db():
     async with SessionLocal() as session:
         yield session
 
-async def connect_database():
-    from .base import Base
-
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
 async def disconnect_database():
     await engine.dispose()

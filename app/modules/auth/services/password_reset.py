@@ -4,8 +4,8 @@ from datetime import datetime, timedelta, timezone
 from core.exceptions import ValidationException
 from infrastructure.email import EmailService
 from infrastructure.email.exceptions import EmailDeliveryFailed
-from users.security import hash_password
-from users.service import UserService
+from modules.users.security import hash_password
+from modules.users.service import UserService
 
 from ..exceptions import InvalidPasswordReset
 from ..models.password_reset_code import PasswordResetCode

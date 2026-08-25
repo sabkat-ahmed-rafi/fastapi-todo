@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from shared.responses import ApiResponse
-from users.schemas import UserResponse
+from modules.users.schemas import UserResponse
 
 from ..dependencies import get_registration_service
 from ..schemas import RegisterRequest
