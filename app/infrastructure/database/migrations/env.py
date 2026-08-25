@@ -12,12 +12,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
 from core.config import settings
-from infrastructure.database.base import Base
-from modules.auth.models.email_verification_token import EmailVerificationToken
-from modules.auth.models.password_reset_code import PasswordResetCode
-from modules.auth.models.refresh_token import RefreshToken
-from modules.files.models import File
-from modules.users.model import Users
+from infrastructure.database.model_registry import model_metadata
 
 
 config = context.config
@@ -32,8 +27,7 @@ config.set_main_option(
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Importing every model above registers its table on this shared metadata.
-target_metadata = Base.metadata
+target_metadata = model_metadata
 
 
 def run_migrations_offline() -> None:
